@@ -1,0 +1,3 @@
+[submodule "external/pykernels"]
+	path = external/pykernels
+	url = https://github.com/gmum/pykernels.git
