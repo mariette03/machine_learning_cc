@@ -24,6 +24,7 @@ data:
             n: 1500 # we don't use the full training set here to minimise training time TODO change
             shuffle: true
             cutoff: =/CUTOFF
+            seed: 42
     valid: 
             path: valid.xyz
             cutoff: =/CUTOFF
@@ -60,5 +61,6 @@ fitting:
     loader_kwargs:
         batch_size: 16 # YOU CAN CHANGE THIS (OPTIONAL)
         num_workers: 4
+        seed: 42
 
 wandb: null
