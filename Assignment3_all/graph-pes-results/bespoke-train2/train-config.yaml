@@ -1,0 +1,66 @@
+CUTOFF: 3.7
+data:
+  test:
+    cutoff: 3.7
+    path: test.xyz
+  train:
+    cutoff: 3.7
+    n: 1500
+    path: train.xyz
+    shuffle: true
+  valid:
+    cutoff: 3.7
+    path: valid.xyz
+fitting:
+  auto_fit_reference_energies: false
+  callbacks: []
+  early_stopping:
+    patience: 10
+  early_stopping_patience: null
+  keep: best
+  loader_kwargs:
+    batch_size: 16
+    num_workers: 4
+    persistent_workers: true
+    pin_memory: false
+  lr_warmup_steps: null
+  max_n_pre_fit: 5000
+  optimizer:
+    lr: 0.01
+    name: AdamW
+  pre_fit_model: true
+  scheduler:
+    factor: 0.5
+    name: ReduceLROnPlateau
+    patience: 10
+  swa: null
+  trainer_kwargs:
+    accelerator: auto
+    check_val_every_n_epoch: 1
+    enable_model_summary: false
+    max_epochs: 100
+general:
+  log_level: INFO
+  progress: logged
+  root_dir: graph-pes-results
+  run_id: bespoke-train2
+  seed: 42
+  torch:
+    dtype: float32
+    float32_matmul_precision: high
+loss:
+- +PerAtomEnergyLoss()
+- +ForceRMSE()
+model:
+  many-body:
+    +MACE:
+      channels: 64
+      correlation: 3
+      cutoff: 3.7
+      elements:
+      - C
+      l_max: 1
+      layers: 2
+      n_radial: 8
+  offset: +LearnableOffset()
+wandb: null
