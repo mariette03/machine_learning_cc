@@ -1,0 +1,204 @@
+[graph-pes INFO]: Logging to graph-pes-results/bespoke-train-1/rank-0.log
+[graph-pes INFO]: ID for this training run: bespoke-train-1
+[graph-pes INFO]: 
+Output for this training run can be found at:
+    └─ graph-pes-results/bespoke-train-1
+        ├─ rank-0.log         # find a verbose log here
+        ├─ model.pt           # the best model (according to valid/loss/total)
+        ├─ lammps_model.pt    # the best model deployed to LAMMPS
+        ├─ train-config.yaml  # the complete config used for this run
+        └─ summary.yaml       # the summary of the training run
+
+[graph-pes DEBUG]: Logging using <pytorch_lightning.loggers.csv_logs.CSVLogger object at 0x79579221fbf0>
+[graph-pes DEBUG]: Callbacks: [OffsetLogger(root=graph-pes-results/bespoke-train-1), ScalesLogger(root=graph-pes-results/bespoke-train-1), <graph_pes.training.callbacks.ModelTimer object at 0x79579221c2f0>, SaveBestModel(root=graph-pes-results/bespoke-train-1), <graph_pes.training.callbacks.LoggedProgressBar object at 0x79579221eff0>, <pytorch_lightning.callbacks.lr_monitor.LearningRateMonitor object at 0x79579221ff50>, EarlyStoppingWithLogging(root=graph-pes-results/bespoke-train-1), <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x79579221fd40>, <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x79579221e240>]
+[graph-pes DEBUG]: 
+Model:
+AdditionModel(
+  offset=LearnableOffset(trainable=True),
+  many-body=MACE(
+    (spherical_harmonics): SphericalHarmonics(1x1o -> 1x0e+1x1o+1x2e)
+    (radial_expansion): HaddamardProduct(
+      (components): ModuleList(
+        (0): Bessel(n_features=8, cutoff=3.7, trainable=True)
+        (1): PolynomialEnvelope(cutoff=3.7, p=5)
+      )
+    )
+    (node_attribute_generator): AtomicOneHot(elements=['C'])
+    (initial_node_embedding): PerElementEmbedding(dim=64, elements=[])
+    (layers): UniformModuleList(
+      (0): MACELayer(
+        (interaction): MACEInteraction(
+          (pre_linear): Linear(64x0e -> 64x0e | 4096 weights)
+          (tp): TensorProduct(64x0e x 1x0e+1x1o+1x2e -> 64x0e+64x1o+64x2e | 192 paths | 192 weights)
+          (weight_generator): MLP(8 → 64 → 64 → 64 → 192, activation=SiLU())
+          (post_linear): Linear(64x0e+64x1o+64x2e -> 64x0e+64x1o+64x2e | 12288 weights)
+          (aggregator): ScaledSumNeighbours(scale="1.000", learnable=False)
+          (attribute_mixer): FullyConnectedTensorProduct(64x0e+64x1o+64x2e x 1x0e -> 64x0e+64x1o+64x2e | 12288 paths | 12288 weights)
+          (reshape): UnflattenIrreps((N, 64x0e+64x1o+64x2e) -> (N, 64, 1x0e+1x1o+1x2e))
+        )
+        (contractions): UniformModuleList(
+          (0): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x0e, correlation=3, weights=960)
+          (1): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x1o, correlation=3, weights=1664)
+        )
+        (post_linear): Linear(64x0e+64x1o -> 64x0e+64x1o | 8192 weights)
+      )
+      (1): MACELayer(
+        (interaction): MACEInteraction(
+          (pre_linear): Linear(64x0e+64x1o -> 64x0e+64x1o | 8192 weights)
+          (tp): TensorProduct(64x0e+64x1o x 1x0e+1x1o+1x2e -> 128x0e+192x1o+128x2e | 448 paths | 448 weights)
+          (weight_generator): MLP(8 → 64 → 64 → 64 → 448, activation=SiLU())
+          (post_linear): Linear(128x0e+192x1o+128x2e -> 64x0e+64x1o+64x2e | 28672 weights)
+          (aggregator): ScaledSumNeighbours(scale="1.000", learnable=False)
+          (reshape): UnflattenIrreps((N, 64x0e+64x1o+64x2e) -> (N, 64, 1x0e+1x1o+1x2e))
+        )
+        (contractions): UniformModuleList(
+          (0): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x0e, correlation=3, weights=960)
+        )
+        (residual_update): FullyConnectedTensorProduct(64x0e+64x1o x 1x0e -> 64x0e | 4096 paths | 4096 weights)
+        (post_linear): Linear(64x0e -> 64x0e | 4096 weights)
+      )
+    )
+    (readouts): UniformModuleList(
+      (0): LinearReadOut(64x0e+64x1o -> 1x0e | 64 weights)
+      (1): NonLinearReadOut(
+        (0): Linear(64x0e -> 16x0e | 1024 weights)
+        (1): SiLU()
+        (2): Linear(16x0e -> 1x0e | 16 weights)
+      )
+    )
+    (scaler): LocalEnergiesScaler(trainable=True)
+  )
+)
+
+[graph-pes DEBUG]: 
+Data:
+DatasetCollection(
+  train=ASEToGraphDataset(4,870, properties=['forces', 'energy', 'stress', 'virial']),
+  valid=ASEToGraphDataset(608, properties=['forces', 'energy', 'stress', 'virial']),
+  test=ASEToGraphDataset(608, properties=['forces', 'energy', 'stress', 'virial'])
+)
+
+[graph-pes DEBUG]: 
+Optimizer:
+Optimizer(name="AdamW", lr=0.01)
+
+[graph-pes DEBUG]: 
+Scheduler:
+LRScheduler(
+  name="ReduceLROnPlateau",
+  factor=0.5,
+  patience=10
+)
+
+[graph-pes DEBUG]: 
+Total loss:
+TotalLoss:
+PerAtomEnergyLoss("energy", metric=RMSE())
+ForceRMSE("forces", metric=RMSE())
+
+[graph-pes INFO]: Preparing data
+[graph-pes INFO]: Caching neighbour lists for 4870 structures with cutoff 3.7, property mapping None and torch dtype torch.float32
+[graph-pes INFO]: Setting up datasets
+[graph-pes INFO]: Pre-fitting the model on 4,870 samples
+[graph-pes DEBUG]: Attempting to pre-fit LearnableOffset
+[graph-pes DEBUG]: Per-element means: {6: -6.9453229904174805}
+[graph-pes DEBUG]: Per-element variances: {6: 87.50376892089844}
+[graph-pes WARNING]: 
+Estimated per-element energy offsets from the training data:
+    PerElementParameter(trainable=True)
+This will lead to a lack of guaranteed physicality in the model, 
+since the energy of an isolated atom (and hence the behaviour of 
+this model in the dissociation limit) is not guaranteed to be 
+correct. Use a FixedOffset energy offset model if you require
+and know the reference energy offsets.
+
+[graph-pes DEBUG]: Attempting to pre-fit MACE
+[graph-pes DEBUG]: Per-element means: {6: -6.9453229904174805}
+[graph-pes DEBUG]: Per-element variances: {6: 87.50376892089844}
+[graph-pes DEBUG]: 
+Model:
+AdditionModel(
+  offset=LearnableOffset({'C': -6.95}, trainable=True),
+  many-body=MACE(
+    (spherical_harmonics): SphericalHarmonics(1x1o -> 1x0e+1x1o+1x2e)
+    (radial_expansion): HaddamardProduct(
+      (components): ModuleList(
+        (0): Bessel(n_features=8, cutoff=3.7, trainable=True)
+        (1): PolynomialEnvelope(cutoff=3.7, p=5)
+      )
+    )
+    (node_attribute_generator): AtomicOneHot(elements=['C'])
+    (initial_node_embedding): PerElementEmbedding(dim=64, elements=['C'])
+    (layers): UniformModuleList(
+      (0): MACELayer(
+        (interaction): MACEInteraction(
+          (pre_linear): Linear(64x0e -> 64x0e | 4096 weights)
+          (tp): TensorProduct(64x0e x 1x0e+1x1o+1x2e -> 64x0e+64x1o+64x2e | 192 paths | 192 weights)
+          (weight_generator): MLP(8 → 64 → 64 → 64 → 192, activation=SiLU())
+          (post_linear): Linear(64x0e+64x1o+64x2e -> 64x0e+64x1o+64x2e | 12288 weights)
+          (aggregator): ScaledSumNeighbours(scale="23.628", learnable=False)
+          (attribute_mixer): FullyConnectedTensorProduct(64x0e+64x1o+64x2e x 1x0e -> 64x0e+64x1o+64x2e | 12288 paths | 12288 weights)
+          (reshape): UnflattenIrreps((N, 64x0e+64x1o+64x2e) -> (N, 64, 1x0e+1x1o+1x2e))
+        )
+        (contractions): UniformModuleList(
+          (0): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x0e, correlation=3, weights=960)
+          (1): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x1o, correlation=3, weights=1664)
+        )
+        (post_linear): Linear(64x0e+64x1o -> 64x0e+64x1o | 8192 weights)
+      )
+      (1): MACELayer(
+        (interaction): MACEInteraction(
+          (pre_linear): Linear(64x0e+64x1o -> 64x0e+64x1o | 8192 weights)
+          (tp): TensorProduct(64x0e+64x1o x 1x0e+1x1o+1x2e -> 128x0e+192x1o+128x2e | 448 paths | 448 weights)
+          (weight_generator): MLP(8 → 64 → 64 → 64 → 448, activation=SiLU())
+          (post_linear): Linear(128x0e+192x1o+128x2e -> 64x0e+64x1o+64x2e | 28672 weights)
+          (aggregator): ScaledSumNeighbours(scale="23.628", learnable=False)
+          (reshape): UnflattenIrreps((N, 64x0e+64x1o+64x2e) -> (N, 64, 1x0e+1x1o+1x2e))
+        )
+        (contractions): UniformModuleList(
+          (0): Contraction(64x0e+64x1o+64x2e + 1x0e -> 64x0e, correlation=3, weights=960)
+        )
+        (residual_update): FullyConnectedTensorProduct(64x0e+64x1o x 1x0e -> 64x0e | 4096 paths | 4096 weights)
+        (post_linear): Linear(64x0e -> 64x0e | 4096 weights)
+      )
+    )
+    (readouts): UniformModuleList(
+      (0): LinearReadOut(64x0e+64x1o -> 1x0e | 64 weights)
+      (1): NonLinearReadOut(
+        (0): Linear(64x0e -> 16x0e | 1024 weights)
+        (1): SiLU()
+        (2): Linear(16x0e -> 1x0e | 16 weights)
+      )
+    )
+    (scaler): LocalEnergiesScaler({'C': 9.35}, trainable=True)
+  )
+)
+
+[graph-pes INFO]: 
+Number of learnable params:
+    offset (LearnableOffset): 1
+    many-body (MACE)        : 145,049
+
+[graph-pes INFO]: Sanity checking the model...
+[graph-pes INFO]: Starting fit...
+[graph-pes DEBUG]: 
+Using LR scheduler config:
+{'interval': 'epoch', 'frequency': 10, 'monitor': 'valid/loss/total', 'strict': True}
+
+[graph-pes DEBUG]: New best model: validation loss 3.6329421997070312
+[graph-pes DEBUG]: Model saved to graph-pes-results/bespoke-train-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/bespoke-train-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.5812597870826721
+[graph-pes DEBUG]: Model saved to graph-pes-results/bespoke-train-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/bespoke-train-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.5292267203330994
+[graph-pes DEBUG]: Model saved to graph-pes-results/bespoke-train-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/bespoke-train-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.4889969527721405
+[graph-pes DEBUG]: Model saved to graph-pes-results/bespoke-train-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/bespoke-train-1/lammps_model.pt
+[graph-pes INFO]: Loading best weights from "/content/graph-pes-results/bespoke-train-1/checkpoints/best.ckpt"
+[graph-pes INFO]: Training complete.
+[graph-pes INFO]: Testing best model...
+[graph-pes INFO]: Testing complete.
+[graph-pes INFO]: Awaiting final Lightning and W&B shutdown...

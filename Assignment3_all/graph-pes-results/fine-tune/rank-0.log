@@ -1,0 +1,327 @@
+[graph-pes INFO]: Logging to graph-pes-results/fine-tune-1/rank-0.log
+[graph-pes INFO]: ID for this training run: fine-tune-1
+[graph-pes INFO]: 
+Output for this training run can be found at:
+    └─ graph-pes-results/fine-tune-1
+        ├─ rank-0.log         # find a verbose log here
+        ├─ model.pt           # the best model (according to valid/loss/total)
+        ├─ lammps_model.pt    # the best model deployed to LAMMPS
+        ├─ train-config.yaml  # the complete config used for this run
+        └─ summary.yaml       # the summary of the training run
+
+[graph-pes DEBUG]: Logging using <pytorch_lightning.loggers.csv_logs.CSVLogger object at 0x150e930932f0>
+[graph-pes DEBUG]: Callbacks: [OffsetLogger(root=graph-pes-results/fine-tune-1), ScalesLogger(root=graph-pes-results/fine-tune-1), <graph_pes.training.callbacks.ModelTimer object at 0x150e947aea20>, SaveBestModel(root=graph-pes-results/fine-tune-1), <graph_pes.training.callbacks.LoggedProgressBar object at 0x150e94e72a80>, <pytorch_lightning.callbacks.lr_monitor.LearningRateMonitor object at 0x150e93093ef0>, <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x150e93092e40>, <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x150e92ff3440>]
+[graph-pes DEBUG]: 
+Model:
+AdditionModel(
+  offset=LearnableOffset(trainable=True),
+  many-body=MACEWrapper(
+    (model): ScaleShiftMACE(
+      (node_embedding): LinearNodeEmbeddingBlock(
+        (linear): Linear(89x0e -> 128x0e | 11392 weights)
+      )
+      (radial_embedding): RadialEmbeddingBlock(
+        (bessel_fn): BesselBasis(r_max=6.0, num_basis=10, trainable=False)
+        (cutoff_fn): PolynomialCutoff(p=5.0, r_max=6.0)
+      )
+      (spherical_harmonics): SphericalHarmonics()
+      (atomic_energies_fn): AtomicEnergiesBlock(energies=[[-3.6672, -1.3321, -3.4821, -4.7367, -7.7249, -8.4056, -7.3601, -7.2846, -4.8965, 0.0000, -2.7594, -2.8140, -4.8469, -7.6948, -6.9633, -4.6726, -2.8117, -0.0626, -2.6176, -5.3905, -7.8858, -10.2684, -8.6651, -9.2331, -8.3050, -7.0490, -5.5774, -5.1727, -3.2521, -1.2902, -3.5271, -4.7085, -3.9765, -3.8862, -2.5185, 6.7669, -2.5635, -4.9380, -10.1498, -11.8469, -12.1389, -8.7917, -8.7869, -7.7809, -6.8500, -4.8910, -2.0634, -0.6396, -2.7887, -3.8186, -3.5871, -2.8804, -1.6356, 9.8467, -2.7653, -4.9910, -8.9337, -8.7356, -8.0190, -8.2515, -7.5917, -8.1697, -13.5927, -18.5175, -7.6474, -8.1230, -7.6078, -6.8503, -7.8269, -3.5848, -7.4554, -12.7963, -14.1081, -9.3549, -11.3875, -9.6219, -7.3244, -5.3047, -2.3801, 0.2495, -2.3240, -3.7300, -3.4388, -5.0629, -11.0246, -12.2656, -13.8556, -14.9331, -15.2828]])
+      (interactions): ModuleList(
+        (0-1): 2 x RealAgnosticResidualInteractionBlock(
+          (linear_up): Linear(128x0e -> 128x0e | 16384 weights)
+          (conv_tp): TensorProduct(128x0e x 1x0e+1x1o+1x2e+1x3o -> 128x0e+128x1o+128x2e+128x3o | 512 paths | 512 weights)
+          (conv_tp_weights): FullyConnectedNet[10, 64, 64, 64, 512]
+          (linear): Linear(128x0e+128x1o+128x2e+128x3o -> 128x0e+128x1o+128x2e+128x3o | 65536 weights)
+          (skip_tp): FullyConnectedTensorProduct(128x0e x 89x0e -> 128x0e | 1458176 paths | 1458176 weights)
+          (reshape): reshape_irreps()
+        )
+      )
+      (products): ModuleList(
+        (0-1): 2 x EquivariantProductBasisBlock(
+          (symmetric_contractions): SymmetricContraction(
+            (contractions): ModuleList(
+              (0): Contraction(
+                (contractions_weighting): ModuleList(
+                  (0-1): 2 x GraphModule()
+                )
+                (contractions_features): ModuleList(
+                  (0-1): 2 x GraphModule()
+                )
+                (weights): ParameterList(
+                    (0): Parameter containing: [torch.float32 of size 89x4x128]
+                    (1): Parameter containing: [torch.float32 of size 89x1x128]
+                )
+                (graph_opt_main): GraphModule()
+              )
+            )
+          )
+          (linear): Linear(128x0e -> 128x0e | 16384 weights)
+        )
+      )
+      (readouts): ModuleList(
+        (0): LinearReadoutBlock(
+          (linear): Linear(128x0e -> 1x0e | 128 weights)
+        )
+        (1): NonLinearReadoutBlock(
+          (linear_1): Linear(128x0e -> 16x0e | 2048 weights)
+          (non_linearity): Activation [x] (16x0e -> 16x0e)
+          (linear_2): Linear(16x0e -> 1x0e | 16 weights)
+        )
+      )
+      (scale_shift): ScaleShiftBlock(scale=0.8042, shift=0.1641)
+    )
+    (z_to_one_hot): ZToOneHot()
+  )
+)
+
+[graph-pes DEBUG]: 
+Data:
+DatasetCollection(
+  train=ASEToGraphDataset(50, properties=['forces', 'energy', 'stress', 'virial']),
+  valid=ASEToGraphDataset(10, properties=['forces', 'energy', 'stress', 'virial'])
+)
+
+[graph-pes DEBUG]: 
+Optimizer:
+Optimizer(name="Adam", lr=0.0001)
+
+[graph-pes DEBUG]: 
+Scheduler:
+No LR scheduler.
+
+[graph-pes DEBUG]: 
+Total loss:
+TotalLoss:
+PerAtomEnergyLoss("energy", metric=RMSE())
+ForceRMSE("forces", metric=RMSE())
+
+[graph-pes INFO]: Preparing data
+[graph-pes INFO]: Caching neighbour lists for 50 structures with cutoff 6.0, property mapping None and torch dtype torch.float32
+[graph-pes INFO]: Caching neighbour lists for 10 structures with cutoff 6.0, property mapping None and torch dtype torch.float32
+[graph-pes INFO]: Setting up datasets
+[graph-pes INFO]: Pre-fitting the model on 50 samples
+[graph-pes DEBUG]: Attempting to pre-fit LearnableOffset
+[graph-pes DEBUG]: Per-element means: {6: -7.101136684417725}
+[graph-pes DEBUG]: Per-element variances: {6: 51.57637023925781}
+[graph-pes WARNING]: 
+Estimated per-element energy offsets from the training data:
+    PerElementParameter(trainable=True)
+This will lead to a lack of guaranteed physicality in the model, 
+since the energy of an isolated atom (and hence the behaviour of 
+this model in the dissociation limit) is not guaranteed to be 
+correct. Use a FixedOffset energy offset model if you require
+and know the reference energy offsets.
+
+[graph-pes DEBUG]: Attempting to pre-fit MACEWrapper
+[graph-pes INFO]: 
+Attempting to automatically detect the offset energy for each element.
+We do this by first generating predictions for each training structure 
+(up to `config.fitting.max_n_pre_fit` if specified). 
+This is a slow process! If you already know the reference energies (or the
+difference in reference energies if you are fine-tuning an existing model to a
+different level of theory), 
+we recommend setting `config.fitting.auto_fit_reference_energies` to `False`
+and manually specifying a `LearnableOffset` component of your model.
+
+See the "Fine-tuning" tutorial in the docs for more information: 
+https://jla-gardner.github.io/graph-pes/quickstart/fine-tuning.html
+
+[graph-pes DEBUG]: Per-element means: {6: 8.385098457336426}
+[graph-pes DEBUG]: Per-element variances: {6: 0.8192015886306763}
+[graph-pes DEBUG]: 
+Model:
+AdditionModel(
+  offset=LearnableOffset({'C': -7.1}, trainable=True),
+  many-body=MACEWrapper(
+    (model): ScaleShiftMACE(
+      (node_embedding): LinearNodeEmbeddingBlock(
+        (linear): Linear(89x0e -> 128x0e | 11392 weights)
+      )
+      (radial_embedding): RadialEmbeddingBlock(
+        (bessel_fn): BesselBasis(r_max=6.0, num_basis=10, trainable=False)
+        (cutoff_fn): PolynomialCutoff(p=5.0, r_max=6.0)
+      )
+      (spherical_harmonics): SphericalHarmonics()
+      (atomic_energies_fn): AtomicEnergiesBlock(energies=[[-3.6672, -1.3321, -3.4821, -4.7367, -7.7249, -8.4056, -7.3601, -7.2846, -4.8965, 0.0000, -2.7594, -2.8140, -4.8469, -7.6948, -6.9633, -4.6726, -2.8117, -0.0626, -2.6176, -5.3905, -7.8858, -10.2684, -8.6651, -9.2331, -8.3050, -7.0490, -5.5774, -5.1727, -3.2521, -1.2902, -3.5271, -4.7085, -3.9765, -3.8862, -2.5185, 6.7669, -2.5635, -4.9380, -10.1498, -11.8469, -12.1389, -8.7917, -8.7869, -7.7809, -6.8500, -4.8910, -2.0634, -0.6396, -2.7887, -3.8186, -3.5871, -2.8804, -1.6356, 9.8467, -2.7653, -4.9910, -8.9337, -8.7356, -8.0190, -8.2515, -7.5917, -8.1697, -13.5927, -18.5175, -7.6474, -8.1230, -7.6078, -6.8503, -7.8269, -3.5848, -7.4554, -12.7963, -14.1081, -9.3549, -11.3875, -9.6219, -7.3244, -5.3047, -2.3801, 0.2495, -2.3240, -3.7300, -3.4388, -5.0629, -11.0246, -12.2656, -13.8556, -14.9331, -15.2828]])
+      (interactions): ModuleList(
+        (0-1): 2 x RealAgnosticResidualInteractionBlock(
+          (linear_up): Linear(128x0e -> 128x0e | 16384 weights)
+          (conv_tp): TensorProduct(128x0e x 1x0e+1x1o+1x2e+1x3o -> 128x0e+128x1o+128x2e+128x3o | 512 paths | 512 weights)
+          (conv_tp_weights): FullyConnectedNet[10, 64, 64, 64, 512]
+          (linear): Linear(128x0e+128x1o+128x2e+128x3o -> 128x0e+128x1o+128x2e+128x3o | 65536 weights)
+          (skip_tp): FullyConnectedTensorProduct(128x0e x 89x0e -> 128x0e | 1458176 paths | 1458176 weights)
+          (reshape): reshape_irreps()
+        )
+      )
+      (products): ModuleList(
+        (0-1): 2 x EquivariantProductBasisBlock(
+          (symmetric_contractions): SymmetricContraction(
+            (contractions): ModuleList(
+              (0): Contraction(
+                (contractions_weighting): ModuleList(
+                  (0-1): 2 x GraphModule()
+                )
+                (contractions_features): ModuleList(
+                  (0-1): 2 x GraphModule()
+                )
+                (weights): ParameterList(
+                    (0): Parameter containing: [torch.float32 of size 89x4x128]
+                    (1): Parameter containing: [torch.float32 of size 89x1x128]
+                )
+                (graph_opt_main): GraphModule()
+              )
+            )
+          )
+          (linear): Linear(128x0e -> 128x0e | 16384 weights)
+        )
+      )
+      (readouts): ModuleList(
+        (0): LinearReadoutBlock(
+          (linear): Linear(128x0e -> 1x0e | 128 weights)
+        )
+        (1): NonLinearReadoutBlock(
+          (linear_1): Linear(128x0e -> 16x0e | 2048 weights)
+          (non_linearity): Activation [x] (16x0e -> 16x0e)
+          (linear_2): Linear(16x0e -> 1x0e | 16 weights)
+        )
+      )
+      (scale_shift): ScaleShiftBlock(scale=0.8042, shift=0.1641)
+    )
+    (z_to_one_hot): ZToOneHot()
+  ),
+  auto_offset=LearnableOffset({'C': 8.39}, trainable=True)
+)
+
+[graph-pes INFO]: 
+Number of learnable params:
+    offset (LearnableOffset)     : 1
+    many-body (MACEWrapper)      : 3,847,696
+    auto_offset (LearnableOffset): 1
+
+[graph-pes INFO]: Sanity checking the model...
+[graph-pes INFO]: Starting fit...
+[graph-pes DEBUG]: New best model: validation loss 0.9142658114433289
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8867502212524414
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8734039068222046
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8639733195304871
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8500578999519348
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8392919301986694
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8288278579711914
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8220014572143555
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8121616244316101
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8077476620674133
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.8017095327377319
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7997753024101257
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7964404225349426
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7910701036453247
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7829289436340332
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7758756875991821
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7724496722221375
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7690610885620117
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7653813362121582
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7651314735412598
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.760293185710907
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7585166692733765
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7561945915222168
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7526785731315613
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7522390484809875
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7492727041244507
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7486027479171753
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7463573217391968
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.744764506816864
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7445129156112671
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7427686452865601
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7403176426887512
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7362816333770752
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7335963845252991
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7321993112564087
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7298117280006409
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7281731367111206
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.726256251335144
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7248704433441162
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes DEBUG]: New best model: validation loss 0.7222434878349304
+[graph-pes DEBUG]: Model saved to graph-pes-results/fine-tune-1/model.pt
+[graph-pes DEBUG]: Deployed model for use with LAMMPS to graph-pes-results/fine-tune-1/lammps_model.pt
+[graph-pes INFO]: Loading best weights from "/content/graph-pes-results/fine-tune-1/checkpoints/best.ckpt"
+[graph-pes INFO]: Training complete.
+[graph-pes INFO]: Testing best model...
+[graph-pes INFO]: Testing complete.
+[graph-pes INFO]: Awaiting final Lightning and W&B shutdown...
