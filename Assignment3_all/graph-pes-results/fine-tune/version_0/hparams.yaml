@@ -1,0 +1,52 @@
+general:
+  seed: 42
+  root_dir: graph-pes-results
+  run_id: fine-tune-1
+  log_level: INFO
+  progress: logged
+  torch:
+    dtype: float32
+    float32_matmul_precision: high
+fitting:
+  pre_fit_model: true
+  max_n_pre_fit: 5000
+  trainer_kwargs:
+    max_epochs: 50
+    accelerator: auto
+    enable_model_summary: false
+  loader_kwargs:
+    num_workers: 1
+    persistent_workers: true
+    batch_size: 5
+    pin_memory: false
+  keep: best
+  callbacks: []
+  scheduler: null
+  swa: null
+  early_stopping: null
+  auto_fit_reference_energies: true
+  lr_warmup_steps: null
+  early_stopping_patience: null
+  optimizer:
+    name: Adam
+    lr: 0.0001
+wandb: null
+model:
+  offset: +LearnableOffset()
+  many-body:
+    +mace_mp:
+      model: small
+data:
+  train: ft_train.extxyz
+  valid: ft_valid.extxyz
+loss:
+- +PerAtomEnergyLoss()
+- +ForceRMSE()
+model_path: !!python/object/apply:pathlib.PosixPath
+- graph-pes-results
+- fine-tune-1
+- model.pt
+lammps_model_path: !!python/object/apply:pathlib.PosixPath
+- graph-pes-results
+- fine-tune-1
+- lammps_model.pt

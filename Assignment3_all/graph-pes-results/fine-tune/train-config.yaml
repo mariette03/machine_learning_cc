@@ -1,0 +1,44 @@
+data:
+  train: ft_train.extxyz
+  valid: ft_valid.extxyz
+fitting:
+  auto_fit_reference_energies: true
+  callbacks: []
+  early_stopping: null
+  early_stopping_patience: null
+  keep: best
+  loader_kwargs:
+    batch_size: 5
+    num_workers: 1
+    persistent_workers: true
+    pin_memory: false
+  lr_warmup_steps: null
+  max_n_pre_fit: 5000
+  optimizer:
+    lr: 0.0001
+    name: Adam
+  pre_fit_model: true
+  scheduler: null
+  swa: null
+  trainer_kwargs:
+    accelerator: auto
+    enable_model_summary: false
+    max_epochs: 50
+general:
+  log_level: INFO
+  progress: logged
+  root_dir: graph-pes-results
+  run_id: fine-tune
+  seed: 42
+  torch:
+    dtype: float32
+    float32_matmul_precision: high
+loss:
+- +PerAtomEnergyLoss()
+- +ForceRMSE()
+model:
+  many-body:
+    +mace_mp:
+      model: small
+  offset: +LearnableOffset()
+wandb: null
