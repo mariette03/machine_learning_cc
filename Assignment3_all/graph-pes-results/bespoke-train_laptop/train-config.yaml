@@ -5,6 +5,7 @@ data:
     path: test.xyz
   train:
     cutoff: 3.7
+    n: 100
     path: train.xyz
     shuffle: true
   valid:
@@ -35,9 +36,9 @@ fitting:
   swa: null
   trainer_kwargs:
     accelerator: auto
-    check_val_every_n_epoch: 10
+    check_val_every_n_epoch: 1
     enable_model_summary: false
-    max_epochs: 250
+    max_epochs: 10
 general:
   log_level: INFO
   progress: logged
@@ -58,7 +59,7 @@ model:
       cutoff: 3.7
       elements:
       - C
-      l_max: 2
+      l_max: 1
       layers: 2
       n_radial: 8
   offset: +LearnableOffset()
